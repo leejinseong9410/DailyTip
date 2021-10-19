@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>97051087178-b5qb3fihi0n1i7dvnsbq8issq20paudb.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.97051087178-b5qb3fihi0n1i7dvnsbq8issq20paudb</string>
+	<key>API_KEY</key>
+	<string>AIzaSyBngS3ak0CW7JUvxr8F-u3-Tovv2LzWVo8</string>
+	<key>GCM_SENDER_ID</key>
+	<string>97051087178</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.jinseong.DailyTip</string>
+	<key>PROJECT_ID</key>
+	<string>dailytip-4cf1b</string>
+	<key>STORAGE_BUCKET</key>
+	<string>dailytip-4cf1b.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:97051087178:ios:99932ac5ab9f905fca71b3</string>
+	<key>DATABASE_URL</key>
+	<string>https://dailytip-4cf1b-default-rtdb.firebaseio.com</string>
+</dict>
+</plist>
