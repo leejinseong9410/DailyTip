@@ -13,13 +13,13 @@ import FirebaseStorage
 protocol dataDeleagate {
     func userData(sendData:String)
 }
-//TopManagerDelegate, MonthManagerDelegate,
-class MainPageController: UIViewController,WearManagerDelegate,LoginManagerDeleagate,StoreManagerDelegate {
+
+class MainPageController: UIViewController,WearManagerDelegate,LoginManagerDeleagate,StoreManagerDelegate,TopManagerDelegate, MonthManagerDelegate{
     
     private let categoryBestView : UIScrollView = {
        let categoryBestView = UIScrollView()
         categoryBestView.layer.borderWidth = 1
-        categoryBestView.layer.borderColor = UIColor.lightGray.cgColor
+        categoryBestView.layer.borderColor = UIColor.white.cgColor
         categoryBestView.isPagingEnabled = true
         categoryBestView.backgroundColor = .white
         categoryBestView.isScrollEnabled = true
@@ -28,7 +28,7 @@ class MainPageController: UIViewController,WearManagerDelegate,LoginManagerDelea
     private let categoryBestView2 : UIScrollView = {
        let categoryBestView = UIScrollView()
         categoryBestView.layer.borderWidth = 1
-        categoryBestView.layer.borderColor = UIColor.lightGray.cgColor
+        categoryBestView.layer.borderColor = UIColor.white.cgColor
         categoryBestView.isPagingEnabled = true
         categoryBestView.backgroundColor = .white
         categoryBestView.isScrollEnabled = true
@@ -53,7 +53,7 @@ class MainPageController: UIViewController,WearManagerDelegate,LoginManagerDelea
     }()
     private let covidScroll : UIScrollView = {
        let covidScroll = UIScrollView()
-        covidScroll.backgroundColor = .red
+        covidScroll.backgroundColor = .white
         covidScroll.isPagingEnabled = true
         covidScroll.isScrollEnabled = true
         return covidScroll
@@ -72,7 +72,7 @@ class MainPageController: UIViewController,WearManagerDelegate,LoginManagerDelea
        let dailyWearImageView = UIImageView()
         dailyWearImageView.contentMode = .scaleToFill
         dailyWearImageView.frame = CGRect(x: 0, y: 240, width: 160, height: 210)
-        dailyWearImageView.backgroundColor = .red
+        dailyWearImageView.backgroundColor = .white
         return dailyWearImageView
     }()
     private let mainScrollView : UIScrollView = {
@@ -189,7 +189,7 @@ class MainPageController: UIViewController,WearManagerDelegate,LoginManagerDelea
         let monthScroll = UIScrollView()
         monthScroll.isPagingEnabled = true
         monthScroll.isScrollEnabled = true
-        monthScroll.backgroundColor = .blue
+        monthScroll.backgroundColor = .white
         return monthScroll
     }()
     private let dailyWearInfo : UIButton = {
@@ -246,7 +246,7 @@ class MainPageController: UIViewController,WearManagerDelegate,LoginManagerDelea
     private let storeTB : UITableView = {
        let tb = UITableView()
         tb.layer.borderWidth = 1
-        tb.layer.borderColor = UIColor.lightGray.cgColor
+        tb.layer.borderColor = UIColor.darkGray.cgColor
         tb.backgroundColor = .white
         tb.register(StoreTableViewCell.self, forCellReuseIdentifier: StoreTableViewCell.indentifier)
         return tb
@@ -286,7 +286,9 @@ class MainPageController: UIViewController,WearManagerDelegate,LoginManagerDelea
         super.viewDidLoad()
         self.navigationItem.hidesBackButton = true
         logOut.target = self
-        navigationItem.rightBarButtonItem = logOut
+        if userNameLabel.text != "로그인이필요합니다." {
+            self.navigationItem.rightBarButtonItem = logOut
+        }
         view.backgroundColor = .white
         categoryCollectionView.dataSource = self
         categoryCollectionView.delegate = self
@@ -318,8 +320,8 @@ class MainPageController: UIViewController,WearManagerDelegate,LoginManagerDelea
         mainScrollView.addSubview(covidScroll)
         covidStack.frame = CGRect(x: view.frame.width / 2 - 10, y: 890, width: 160, height: 50)
         mainScrollView.addSubview(covidStack)
-        //covidData()
-        //categoryBestDataSet()
+        covidData()
+        categoryBestDataSet()
     }
     private func addScrollViewContent(){
         mainScrollView.addSubview(userNameLabel)
@@ -358,12 +360,12 @@ class MainPageController: UIViewController,WearManagerDelegate,LoginManagerDelea
     private func dailyWearMg(){
         mainScrollView.addSubview(dailyWearImageView)
         mainScrollView.addSubview(dailyWearTittle)
-//        var topTen = TopTenBoardManager()
-//        topTen.delegate = self
-//        topTen.loadFireBaseData(boardName: "Top")
-//        var monthBest = MonthBestManger()
-//        monthBest.delegate = self
-//        monthBest.loadFireData(name: "MonthBest")
+        var topTen = TopTenBoardManager()
+        topTen.delegate = self
+        topTen.loadFireBaseData(boardName: "Top")
+        var monthBest = MonthBestManger()
+        monthBest.delegate = self
+        monthBest.loadFireData(name: "MonthBest")
         var wearManager = WearManager()
         wearManager.delegate = self
         if let userDFvalue = UserDefaults.standard.string(forKey: "userPWdata") {
@@ -798,124 +800,124 @@ class MainPageController: UIViewController,WearManagerDelegate,LoginManagerDelea
         view.removeFromSuperview()
        
     }
-//    func monthDataGet(dictionary: [Dictionary<String, Any>]) {
-//        for i in 0..<dictionary.count{
-//            let topButton = UIButton()
-//            topButton.layer.borderColor = UIColor.white.cgColor
-//            topButton.layer.borderWidth = 1
-//            topButton.addTarget(self, action: #selector(topButtonAct), for: .touchUpInside)
-//            topButton.titleLabel?.text = dictionary[i]["imageID"] as? String
-//            topButton.setTitleColor(.clear, for: .normal)
-//            let titleLabel = UILabel()
-//            let tagLabel = UILabel()
-//            tagLabel.textColor = .white
-//            tagLabel.textAlignment = .center
-//            tagLabel.font = UIFont.systemFont(ofSize: 10,weight: .semibold)
-//            let tagTxT = dictionary[i]["tag"] as! [String]
-//            let textFormat = tagTxT.joined()
-//            if textFormat.isEmpty == true {
-//                tagLabel.text = "태그없음"
-//                tagLabel.textColor = .lightGray
-//            }else{
-//                tagLabel.text = textFormat
-//            }
-//            titleLabel.text = dictionary[i]["title"] as? String
-//            titleLabel.textColor = .white
-//            titleLabel.textAlignment = .center
-//            titleLabel.font = UIFont.systemFont(ofSize: 15,weight: .semibold)
-//            let storageRef = Storage.storage().reference()
-//            let reference = storageRef.child(dictionary[i]["imageID"] as! String)
-//            reference.downloadURL { url, error in
-//                if let err = error {
-//                    print(err.localizedDescription)
-//                }else{
-//                    do{
-//                        let data = try Data(contentsOf: url!)
-//                        let imageData = UIImage(data: data)
-//                        topButton.setBackgroundImage(imageData, for: .normal)
-//                    }catch{
-//                     print("이미지 다운 캐치 에러")
-//                    }
-//                }
-//            }
-//            topButton.contentMode = .scaleAspectFit
-//            let xPosition = self.monthScrollView.frame.width * CGFloat(i)
-//            topButton.frame = CGRect(x: xPosition, y: 10,
-//            width: 160 ,height: 210)
-//            titleLabel.frame = CGRect(x: xPosition + 8, y: 160, width: 130, height: 20)
-//            tagLabel.frame = CGRect(x: xPosition + 8, y: 180, width: 150, height: 15)
-//            self.monthScrollView.contentSize.width =
-//            self.view.frame.width * CGFloat(1+i)
-//            self.monthScrollView.addSubview(topButton)
-//            self.monthScrollView.addSubview(titleLabel)
-//            self.monthScrollView.addSubview(tagLabel)
-//            let numLabel = UILabel()
-//            numLabel.text = String(i + 1)
-//            numLabel.textColor = .white
-//            numLabel.textAlignment = .center
-//            numLabel.font = UIFont.systemFont(ofSize: 14)
-//            numLabel.frame = CGRect(x: xPosition, y: 0, width: 16, height: 16)
-//            numLabel.layer.cornerRadius = numLabel.frame.height / 2
-//            numLabel.layer.borderWidth = 1
-//            numLabel.layer.borderColor = UIColor.black.cgColor
-//            numLabel.backgroundColor = .black
-//            numLabel.contentMode = .scaleToFill
-//            self.monthScrollView.addSubview(numLabel)
-//         }
-//    }
-//    func getTopData(dictionary: [Dictionary<String, Any>]) {
-//        for i in 0..<dictionary.count{
-//            let topButton = UIButton()
-//            topButton.layer.borderColor = UIColor.white.cgColor
-//            topButton.layer.borderWidth = 1
-//            topButton.addTarget(self, action: #selector(topButtonAct), for: .touchUpInside)
-//            topButton.titleLabel?.text = dictionary[i]["imageID"] as? String
-//            topButton.setTitleColor(.clear, for: .normal)
-//            let titleLabel = UILabel()
-//            let tagLabel = UILabel()
-//            tagLabel.textColor = .white
-//            tagLabel.textAlignment = .center
-//            tagLabel.font = UIFont.systemFont(ofSize: 10,weight: .semibold)
-//            let tagTxT = dictionary[i]["tag"] as! [String]
-//            let textFormat = tagTxT.joined()
-//            if textFormat.isEmpty == true {
-//                tagLabel.text = "태그없음"
-//                tagLabel.textColor = .lightGray
-//            }else{
-//                tagLabel.text = textFormat
-//            }
-//            titleLabel.text = dictionary[i]["title"] as? String
-//            titleLabel.textColor = .white
-//            titleLabel.textAlignment = .center
-//            titleLabel.font = UIFont.systemFont(ofSize: 15,weight: .semibold)
-//            let storageRef = Storage.storage().reference()
-//            let reference = storageRef.child(dictionary[i]["imageID"] as! String)
-//            reference.downloadURL { url, error in
-//                if let err = error {
-//                    print(err.localizedDescription)
-//                }else{
-//                    do{
-//                        let data = try Data(contentsOf: url!)
-//                        let imageData = UIImage(data: data)
-//                        topButton.setBackgroundImage(imageData, for: .normal)
-//                    }catch{
-//                     print("이미지 다운 캐치 에러")
-//                    }
-//                }
-//            }
-//            topButton.contentMode = .scaleAspectFit
-//            let xPosition = self.todayHOTtenScrollView.frame.width * CGFloat(i)
-//            topButton.frame = CGRect(x: xPosition, y: 0,
-//            width: 160 ,height: 210)
-//            titleLabel.frame = CGRect(x: xPosition + 8, y: 160, width: 130, height: 20)
-//            tagLabel.frame = CGRect(x: xPosition + 8, y: 180, width: 150, height: 15)
-//            self.todayHOTtenScrollView.contentSize.width =
-//                self.view.frame.width * CGFloat(1+i)
-//            self.todayHOTtenScrollView.addSubview(topButton)
-//            self.todayHOTtenScrollView.addSubview(titleLabel)
-//            self.todayHOTtenScrollView.addSubview(tagLabel)
-//         }
-//    }
+    func monthDataGet(dictionary: [Dictionary<String, Any>]) {
+        for i in 0..<dictionary.count{
+            let topButton = UIButton()
+            topButton.layer.borderColor = UIColor.white.cgColor
+            topButton.layer.borderWidth = 1
+            topButton.addTarget(self, action: #selector(topButtonAct), for: .touchUpInside)
+            topButton.titleLabel?.text = dictionary[i]["imageID"] as? String
+            topButton.setTitleColor(.clear, for: .normal)
+            let titleLabel = UILabel()
+            let tagLabel = UILabel()
+            tagLabel.textColor = .white
+            tagLabel.textAlignment = .center
+            tagLabel.font = UIFont.systemFont(ofSize: 10,weight: .semibold)
+            let tagTxT = dictionary[i]["tag"] as! [String]
+            let textFormat = tagTxT.joined()
+            if textFormat.isEmpty == true {
+                tagLabel.text = "태그없음"
+                tagLabel.textColor = .lightGray
+            }else{
+                tagLabel.text = textFormat
+            }
+            titleLabel.text = dictionary[i]["title"] as? String
+            titleLabel.textColor = .white
+            titleLabel.textAlignment = .center
+            titleLabel.font = UIFont.systemFont(ofSize: 15,weight: .semibold)
+            let storageRef = Storage.storage().reference()
+            let reference = storageRef.child(dictionary[i]["imageID"] as! String)
+            reference.downloadURL { url, error in
+                if let err = error {
+                    print(err.localizedDescription)
+                }else{
+                    do{
+                        let data = try Data(contentsOf: url!)
+                        let imageData = UIImage(data: data)
+                        topButton.setBackgroundImage(imageData, for: .normal)
+                    }catch{
+                     print("이미지 다운 캐치 에러")
+                    }
+                }
+            }
+            topButton.contentMode = .scaleAspectFit
+            let xPosition = self.monthScrollView.frame.width * CGFloat(i)
+            topButton.frame = CGRect(x: xPosition, y: 10,
+            width: 160 ,height: 210)
+            titleLabel.frame = CGRect(x: xPosition + 8, y: 160, width: 130, height: 20)
+            tagLabel.frame = CGRect(x: xPosition + 8, y: 180, width: 150, height: 15)
+            self.monthScrollView.contentSize.width =
+            self.view.frame.width * CGFloat(1+i)
+            self.monthScrollView.addSubview(topButton)
+            self.monthScrollView.addSubview(titleLabel)
+            self.monthScrollView.addSubview(tagLabel)
+            let numLabel = UILabel()
+            numLabel.text = String(i + 1)
+            numLabel.textColor = .white
+            numLabel.textAlignment = .center
+            numLabel.font = UIFont.systemFont(ofSize: 14)
+            numLabel.frame = CGRect(x: xPosition, y: 0, width: 16, height: 16)
+            numLabel.layer.cornerRadius = numLabel.frame.height / 2
+            numLabel.layer.borderWidth = 1
+            numLabel.layer.borderColor = UIColor.black.cgColor
+            numLabel.backgroundColor = .black
+            numLabel.contentMode = .scaleToFill
+            self.monthScrollView.addSubview(numLabel)
+         }
+    }
+    func getTopData(dictionary: [Dictionary<String, Any>]) {
+        for i in 0..<dictionary.count{
+            let topButton = UIButton()
+            topButton.layer.borderColor = UIColor.white.cgColor
+            topButton.layer.borderWidth = 1
+            topButton.addTarget(self, action: #selector(topButtonAct), for: .touchUpInside)
+            topButton.titleLabel?.text = dictionary[i]["imageID"] as? String
+            topButton.setTitleColor(.clear, for: .normal)
+            let titleLabel = UILabel()
+            let tagLabel = UILabel()
+            tagLabel.textColor = .white
+            tagLabel.textAlignment = .center
+            tagLabel.font = UIFont.systemFont(ofSize: 10,weight: .semibold)
+            let tagTxT = dictionary[i]["tag"] as! [String]
+            let textFormat = tagTxT.joined()
+            if textFormat.isEmpty == true {
+                tagLabel.text = "태그없음"
+                tagLabel.textColor = .lightGray
+            }else{
+                tagLabel.text = textFormat
+            }
+            titleLabel.text = dictionary[i]["title"] as? String
+            titleLabel.textColor = .white
+            titleLabel.textAlignment = .center
+            titleLabel.font = UIFont.systemFont(ofSize: 15,weight: .semibold)
+            let storageRef = Storage.storage().reference()
+            let reference = storageRef.child(dictionary[i]["imageID"] as! String)
+            reference.downloadURL { url, error in
+                if let err = error {
+                    print(err.localizedDescription)
+                }else{
+                    do{
+                        let data = try Data(contentsOf: url!)
+                        let imageData = UIImage(data: data)
+                        topButton.setBackgroundImage(imageData, for: .normal)
+                    }catch{
+                     print("이미지 다운 캐치 에러")
+                    }
+                }
+            }
+            topButton.contentMode = .scaleAspectFit
+            let xPosition = self.todayHOTtenScrollView.frame.width * CGFloat(i)
+            topButton.frame = CGRect(x: xPosition, y: 0,
+            width: 160 ,height: 210)
+            titleLabel.frame = CGRect(x: xPosition + 8, y: 160, width: 130, height: 20)
+            tagLabel.frame = CGRect(x: xPosition + 8, y: 180, width: 150, height: 15)
+            self.todayHOTtenScrollView.contentSize.width =
+                self.view.frame.width * CGFloat(1+i)
+            self.todayHOTtenScrollView.addSubview(topButton)
+            self.todayHOTtenScrollView.addSubview(titleLabel)
+            self.todayHOTtenScrollView.addSubview(tagLabel)
+         }
+    }
     @objc private func topButtonAct(sender:UIButton){
         guard let documentID = sender.titleLabel?.text else { return }
         let postPage = PostPageController()

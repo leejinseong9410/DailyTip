@@ -31,21 +31,21 @@ class MyPageController: UIViewController{
         // firestroge 로 에 userID 로 document 생성하고 그곳에 이미지 저장하기.
         // 꺼내올때도 그곳에서 꺼내오기.
         let userProfile = UIImageView()
-//        let storageRef = Storage.storage().reference()
-//        let reference = storageRef.child(UserData.userID)
-//        reference.downloadURL { (url,error) in
-//            if let error = error {
-//                print(error)
-//            }else{
-//                do{
-//                    let data = try Data(contentsOf: url!)
-//                    let imageData = UIImage(data: data)
-//                    userProfile.image = imageData
-//                }catch{
-//                    print(error)
-//                }
-//            }
-//        }
+        let storageRef = Storage.storage().reference()
+        let reference = storageRef.child(UserData.userID)
+        reference.downloadURL { (url,error) in
+            if let error = error {
+                print(error)
+            }else{
+                do{
+                    let data = try Data(contentsOf: url!)
+                    let imageData = UIImage(data: data)
+                    userProfile.image = imageData
+                }catch{
+                    print(error)
+                }
+            }
+        }
         userProfile.contentMode = .scaleAspectFill
         userProfile.backgroundColor = .white
         userProfile.layer.masksToBounds = false
@@ -115,8 +115,16 @@ class MyPageController: UIViewController{
     }()
     private let userPhoneNum : UILabel = {
         let phone = UILabel()
-        if let userDataPhone = UserDefaults.standard.string(forKey: "userIDdata") {
-            phone.text = userDataPhone
+        let db = Firestore.firestore()
+        if let userId = UserDefaults.standard.string(forKey: "userPWdata") {
+            db.collection("Users").document(userId).getDocument { docsnap, err in
+                if let _ = err {
+                    print("phone 에러")
+                }else{
+                    guard let genderValue = docsnap?.get("Phone") else { return }
+                    phone.text = genderValue as? String
+                }
+            }
         }else{
             if UserData.userPhone.isEmpty != true {
                 phone.text = UserData.userPhone
@@ -346,13 +354,10 @@ class MyPageController: UIViewController{
         // 이미지 변경없을시 기존 이미지 그대로 가져와서 다시 추가후 생성.
         let dbPath = ["Car","Covid","Food","Mens","Womans","Wear","House","SNS","Hair","Gym","Dog","Computer","Top","MonthBest"]
         let db = Firestore.firestore()
-        
         db.collection("Users").document(UserData.userID).getDocument { document, err in
             if err == nil {
                 guard let phone = document?.get("Phone") else { return }
                 guard let gender = document?.get("Gender") else { return }
-                print(phone)
-                print(gender)
                 let newPhone = phone as! String
                 let newGender = gender as! String
             let newDb = Firestore.firestore()
@@ -387,12 +392,14 @@ class MyPageController: UIViewController{
             print("imageData Error")
             return
             }
+            UserDefaults.standard.removeObject(forKey: "userPWdata")
+            UserDefaults.standard.setValue(userChangeID, forKey: "userPWdata")
             UserData.userImage = userImage
             data = userImage.jpegData(compressionQuality: 0.8)!
             let meta = StorageMetadata()
             meta.contentType = "image/png"
             let storage = Storage.storage()
-            storage.reference().child(self.userIdTextField.text!).putData(data,metadata: meta) {
+            storage.reference().child(userChangeID).putData(data,metadata: meta) {
             (metaData,err) in
             if let error = err {
             print(error.localizedDescription)
@@ -416,6 +423,7 @@ class MyPageController: UIViewController{
                 UserData.userID = userChangeID
                 self.idCorrectionButton.isHidden = false
                 self.sucessBtn.isHidden = true
+                self.myPostTable.reloadData()
             }else{
                 print("document Error")
             }
@@ -448,23 +456,23 @@ extension MyPageController : UITableViewDataSource {
         cell.postWriter.text = self.postManArray[indexPath.row]
         cell.postRecomend.text = "추천\(likeArray[indexPath.row])"
         cell.postNotRecomend.text = "비추천\(hateArray[indexPath.row])"
-//        let storageRef = Storage.storage().reference()
-//        let reference = storageRef.child(postImageIDarray.reversed()[indexPath.row])
-//        reference.downloadURL { (url,error) in
-//            if let _ = error {
-//                print("테이블뷰 이미지 가져오기 에러")
-//            }else{
-//                do{
-//                    let data = try Data(contentsOf: url!)
-//                    let imageData = UIImage(data: data)
-//                    cell.postImage.image = imageData
-//                }catch{
-//                    cell.postImage.backgroundColor = .white
-//                    cell.postImage.layer.borderColor = UIColor.darkGray.cgColor
-//                    cell.postImage.layer.borderWidth = 1
-//                }
-//            }
-//        }
+        let storageRef = Storage.storage().reference()
+        let reference = storageRef.child(postImageIDarray.reversed()[indexPath.row])
+        reference.downloadURL { (url,error) in
+            if let _ = error {
+                print("테이블뷰 이미지 가져오기 에러")
+            }else{
+                do{
+                    let data = try Data(contentsOf: url!)
+                    let imageData = UIImage(data: data)
+                    cell.postImage.image = imageData
+                }catch{
+                    cell.postImage.backgroundColor = .white
+                    cell.postImage.layer.borderColor = UIColor.darkGray.cgColor
+                    cell.postImage.layer.borderWidth = 1
+                }
+            }
+        }
         return cell
     }
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {

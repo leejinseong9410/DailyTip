@@ -17,7 +17,7 @@ struct TopTenBoardManager {
     
     private let writeDate : DateFormatter = {
         let writeDate = DateFormatter()
-        writeDate.dateFormat = "YYYY-MM-dd/HH:mm:ss"
+        writeDate.dateFormat = "MM"
         return writeDate
     }()
     
@@ -49,11 +49,9 @@ struct TopTenBoardManager {
                     }else{
                         dictionary.append(newDictionary)
                         let postMonth = postDate.split(separator: "/")
-                        let month = dateString.split(separator: "/")
                         let postMonthSp = postMonth[0].split(separator: "-")
-                        let monthSp = month[0].split(separator: "-")
                         var pathName = ""
-                        if monthSp[1] == postMonthSp[1] {
+                        if dateString == postMonthSp[1] {
                             if postImageID.contains("Car") == true {
                                 pathName = "Car"
                             }else if postImageID.contains("Covid") == true {
@@ -81,7 +79,7 @@ struct TopTenBoardManager {
                             }else{
                                 print("포스트 페이지 이동 에러")
                             }
-                            db.collection("MonthBest").document(String(month[1])).setData([postImageID:[pathName:like]],merge: true,completion: nil)
+                            db.collection("MonthBest").document(dateString).setData([postImageID:[pathName:like]],merge: true,completion: nil)
                         }else{
                                 print("지난 post\(postImageID)")
                             }

@@ -15,7 +15,7 @@ struct MonthBestManger {
     
     private let writeDate : DateFormatter = {
         let writeDate = DateFormatter()
-        writeDate.dateFormat = "YYYY-MM-dd/HH:mm:ss"
+        writeDate.dateFormat = "MM"
         return writeDate
     }()
     
@@ -25,16 +25,15 @@ struct MonthBestManger {
         var dictionary = [Dictionary<String,Any>]()
         let date = Date()
         let dateString = self.writeDate.string(from: date)
-        let monthDate = dateString.split(separator: "/")
-        let monthSp = monthDate[0].split(separator: "-")
+        print(dateString)
         let db = Firestore.firestore()
-        db.collection(name).document(String(monthSp[1])).getDocument { docSnap, err in
+        db.collection(name).document(dateString).getDocument { docSnap, err in
             if let _ = err {
                 print("이달의 데이터 에러")
             }else{
                 var keyString = ""
                 var pathName = ""
-                guard let monthData = docSnap?.data() else { return }
+                guard let monthData = docSnap!.data() else { return }
                 for _ in 0..<monthData.count {
                     keyString = monthData.keys.joined(separator: " ")
                 }
@@ -71,7 +70,7 @@ struct MonthBestManger {
                         if let _ = err {
                             print("seSnap에러")
                         }else{
-                            guard let snapData = seSnap  else { return }
+                            guard let snapData = seSnap else { return }
                             let title = snapData["Title"] as! String
                             let postWriter = snapData["UserID"] as! String
                             let postDate = snapData["Date"] as! String
